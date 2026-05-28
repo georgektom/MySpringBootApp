@@ -26,6 +26,22 @@ This project is a sample Spring Boot service that:
 - `k8s/overlays/staging`: staging namespace and deployment patch
 - `src/main/java`: Spring Boot application code
 
+## Environment-specific ingress
+
+The Kubernetes manifests use one ingress per service, with a different hostname in each environment:
+
+- `dev`: `myapp.dev.example.com`
+- `staging`: `myapp.staging.example.com`
+
+This is a better fit for multiple microservices in the same environment because each service gets its own hostname instead of competing for path rewrites on a shared host.
+
+Replace the placeholder hosts in:
+
+- `k8s/overlays/dev/ingress-patch.yaml`
+- `k8s/overlays/staging/ingress-patch.yaml`
+
+The base ingress currently assumes an `nginx` ingress class. If your cluster uses AWS Load Balancer Controller instead, change `ingressClassName` and add the ALB annotations your platform expects.
+
 ## Branch to environment mapping
 
 - Push to `dev` deploys to the `dev` EKS environment
