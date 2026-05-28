@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: myapp
+  config:
+    import: optional:aws-secretsmanager:/myapp/common,optional:aws-secretsmanager:/myapp/${APP_ENV:local}
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/myapp?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:myapp}
+    password: ${DB_PASSWORD:myapp}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  cloud:
+    aws:
+      region:
+        static: ${AWS_REGION:us-east-1}
+
+app:
+  environment: ${APP_ENV:local}
+  aws:
+    s3:
+      bucket-name: ${APP_AWS_S3_BUCKET_NAME:myapp-local-bucket}
+    sns:
+      order-topic-arn: ${APP_AWS_SNS_ORDER_TOPIC_ARN:arn:aws:sns:us-east-1:000000000000:myapp-order-events}
+    sqs:
+      order-queue: ${APP_AWS_SQS_ORDER_QUEUE:myapp-order-queue}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+logging:
+  level:
+    com.example.myapp: INFO
+

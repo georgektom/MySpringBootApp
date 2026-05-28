@@ -1,0 +1,14 @@
+spring:
+  cloud:
+    aws:
+      credentials:
+        access-key: test
+        secret-key: test
+      endpoint: http://localhost:4566
+      s3:
+        path-style-access-enabled: true
+
+app:
+  aws:
+    localstack:
+      endpoint: http://localhost:4566
