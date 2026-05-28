@@ -18,6 +18,9 @@ spring:
     aws:
       region:
         static: ${AWS_REGION:us-east-1}
+  graphql:
+    graphiql:
+      enabled: true
 
 app:
   environment: ${APP_ENV:local}
@@ -42,4 +45,3 @@ management:
 logging:
   level:
     com.example.myapp: INFO
-

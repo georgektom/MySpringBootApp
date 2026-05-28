@@ -54,6 +54,14 @@ curl -X POST http://localhost:8080/api/orders \
   -d '{"customerName":"Ada","productCode":"BOOK-1","quantity":2}'
 ```
 
+Fetch order attributes through GraphQL:
+
+```bash
+curl -X POST http://localhost:8080/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query":"query { orders { id customerName productCode quantity status s3ObjectKey createdAt updatedAt } }"}'
+```
+
 ## Secrets Manager setup
 
 The app imports two optional secrets:
@@ -130,4 +138,3 @@ That IAM role should allow:
 - environment-specific ingress
 - integration tests with Testcontainers
 - Argo CD or Flux if you want GitOps later
-

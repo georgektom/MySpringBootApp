@@ -19,6 +19,8 @@ import software.amazon.awssdk.services.sns.model.PublishRequest;
 
 import com.example.myapp.config.AppAwsProperties;
 
+import java.util.List;
+
 @Service
 public class OrderService {
 
@@ -72,6 +74,11 @@ public class OrderService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
     }
 
+    @Transactional(readOnly = true)
+    public List<OrderEntity> getOrders() {
+        return orderRepository.findAll();
+    }
+
     @Transactional
     public void markProcessed(Long id) {
         OrderEntity order = getOrder(id);
@@ -112,4 +119,3 @@ public class OrderService {
         }
     }
 }
-
