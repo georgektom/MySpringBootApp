@@ -1,6 +1,8 @@
 package com.example.myapp.order.service;
 
 import com.example.myapp.order.api.CreateOrderRequest;
+import com.example.myapp.order.api.CartQuoteRequest;
+import com.example.myapp.order.api.CartQuoteResponse;
 import com.example.myapp.order.domain.OrderEntity;
 import com.example.myapp.order.domain.OrderStatus;
 import com.example.myapp.order.repository.OrderRepository;
@@ -30,6 +32,7 @@ public class OrderService {
     private final SnsClient snsClient;
     private final SqsTemplate sqsTemplate;
     private final AppAwsProperties awsProperties;
+    private final OrderPricingService orderPricingService;
 
     public OrderService(
             OrderRepository orderRepository,
@@ -37,7 +40,8 @@ public class OrderService {
             S3Client s3Client,
             SnsClient snsClient,
             SqsTemplate sqsTemplate,
-            AppAwsProperties awsProperties
+            AppAwsProperties awsProperties,
+            OrderPricingService orderPricingService
     ) {
         this.orderRepository = orderRepository;
         this.objectMapper = objectMapper;
@@ -45,14 +49,21 @@ public class OrderService {
         this.snsClient = snsClient;
         this.sqsTemplate = sqsTemplate;
         this.awsProperties = awsProperties;
+        this.orderPricingService = orderPricingService;
     }
 
     @Transactional
     public OrderEntity createOrder(CreateOrderRequest request) {
+        OrderPricingSnapshot pricingSnapshot = orderPricingService.calculate(request.productCode(), request.quantity());
+
         OrderEntity order = new OrderEntity();
         order.setCustomerName(request.customerName());
         order.setProductCode(request.productCode());
         order.setQuantity(request.quantity());
+        order.setUnitPrice(pricingSnapshot.unitPrice());
+        order.setTotalPrice(pricingSnapshot.totalPrice());
+        order.setTotalPriceInMinorUnits(pricingSnapshot.totalPriceInMinorUnits());
+        order.setCurrency(pricingSnapshot.currency());
         order.setStatus(OrderStatus.CREATED);
         OrderEntity savedOrder = orderRepository.save(order);
 
@@ -77,6 +88,19 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<OrderEntity> getOrders() {
         return orderRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public CartQuoteResponse quoteOrder(CartQuoteRequest request) {
+        OrderPricingSnapshot pricingSnapshot = orderPricingService.calculate(request.productCode(), request.quantity());
+        return new CartQuoteResponse(
+                request.productCode(),
+                request.quantity(),
+                pricingSnapshot.unitPrice(),
+                pricingSnapshot.totalPrice(),
+                pricingSnapshot.totalPriceInMinorUnits(),
+                pricingSnapshot.currency()
+        );
     }
 
     @Transactional

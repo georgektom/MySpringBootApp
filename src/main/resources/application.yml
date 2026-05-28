@@ -24,6 +24,8 @@ spring:
 
 app:
   environment: ${APP_ENV:local}
+  pricing-service:
+    base-url: ${APP_PRICING_SERVICE_BASE_URL:http://localhost:8081}
   aws:
     s3:
       bucket-name: ${APP_AWS_S3_BUCKET_NAME:myapp-local-bucket}

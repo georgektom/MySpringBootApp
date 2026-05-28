@@ -33,16 +33,24 @@ public class OrderController {
         return toResponse(orderService.getOrder(id));
     }
 
+    @PostMapping("/quote")
+    public CartQuoteResponse quoteOrder(@Valid @RequestBody CartQuoteRequest request) {
+        return orderService.quoteOrder(request);
+    }
+
     private OrderResponse toResponse(OrderEntity entity) {
         return new OrderResponse(
                 entity.getId(),
                 entity.getCustomerName(),
                 entity.getProductCode(),
                 entity.getQuantity(),
+                entity.getUnitPrice(),
+                entity.getTotalPrice(),
+                entity.getTotalPriceInMinorUnits(),
+                entity.getCurrency(),
                 entity.getStatus(),
                 entity.getS3ObjectKey(),
                 entity.getCreatedAt()
         );
     }
 }
-

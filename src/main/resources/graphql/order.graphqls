@@ -8,9 +8,12 @@ type Order {
   customerName: String!
   productCode: String!
   quantity: Int!
+  unitPrice: Float!
+  totalPrice: Float!
+  totalPriceInMinorUnits: ID!
+  currency: String!
   status: String!
   s3ObjectKey: String
   createdAt: String!
   updatedAt: String!
 }
-

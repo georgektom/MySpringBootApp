@@ -15,4 +15,5 @@ spec:
               value: dev
             - name: AWS_REGION
               value: us-east-1
-
+            - name: APP_PRICING_SERVICE_BASE_URL
+              value: http://pricingapp

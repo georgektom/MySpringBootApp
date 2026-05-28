@@ -28,12 +28,12 @@ This project is a sample Spring Boot service that:
 
 ## Environment-specific ingress
 
-The Kubernetes manifests use one ingress per service, with a different hostname in each environment:
+The Kubernetes manifests are set up for a shared environment hostname with service-specific paths:
 
-- `dev`: `myapp.dev.example.com`
-- `staging`: `myapp.staging.example.com`
+- `dev`: `dev.mycompany.com/orders`
+- `staging`: `stage.mycompany.com/orders`
 
-This is a better fit for multiple microservices in the same environment because each service gets its own hostname instead of competing for path rewrites on a shared host.
+The ingress uses nginx rewrite rules so requests like `/orders/api/orders` are forwarded to the app as `/api/orders`.
 
 Replace the placeholder hosts in:
 
@@ -62,6 +62,8 @@ Run the app:
 mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
+For order creation and cart quote calculation, make sure `PricingApp` is also running locally on `http://localhost:8081`, or override `APP_PRICING_SERVICE_BASE_URL`.
+
 Create a sample order:
 
 ```bash
@@ -70,12 +72,20 @@ curl -X POST http://localhost:8080/api/orders \
   -d '{"customerName":"Ada","productCode":"BOOK-1","quantity":2}'
 ```
 
+Get a cart quote using pricing from `PricingApp`:
+
+```bash
+curl -X POST http://localhost:8080/api/orders/quote \
+  -H "Content-Type: application/json" \
+  -d '{"productCode":"BOOK-1","quantity":2}'
+```
+
 Fetch order attributes through GraphQL:
 
 ```bash
 curl -X POST http://localhost:8080/graphql \
   -H "Content-Type: application/json" \
-  -d '{"query":"query { orders { id customerName productCode quantity status s3ObjectKey createdAt updatedAt } }"}'
+  -d '{"query":"query { orders { id customerName productCode quantity unitPrice totalPrice currency status s3ObjectKey createdAt updatedAt } }"}'
 ```
 
 ## Secrets Manager setup

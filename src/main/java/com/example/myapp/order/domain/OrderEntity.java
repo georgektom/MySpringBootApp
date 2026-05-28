@@ -12,6 +12,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "orders")
@@ -36,6 +37,18 @@ public class OrderEntity {
 
     @Column
     private String s3ObjectKey;
+
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal unitPrice;
+
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal totalPrice;
+
+    @Column(nullable = false)
+    private Long totalPriceInMinorUnits;
+
+    @Column(nullable = false)
+    private String currency;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -103,6 +116,38 @@ public class OrderEntity {
         this.s3ObjectKey = s3ObjectKey;
     }
 
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public Long getTotalPriceInMinorUnits() {
+        return totalPriceInMinorUnits;
+    }
+
+    public void setTotalPriceInMinorUnits(Long totalPriceInMinorUnits) {
+        this.totalPriceInMinorUnits = totalPriceInMinorUnits;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -111,4 +156,3 @@ public class OrderEntity {
         return updatedAt;
     }
 }
-

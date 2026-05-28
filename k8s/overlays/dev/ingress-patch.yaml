@@ -3,17 +3,16 @@ kind: Ingress
 metadata:
   name: myapp
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: myapp.dev.example.com
+    external-dns.alpha.kubernetes.io/hostname: dev.mycompany.com
 spec:
   rules:
-    - host: myapp.dev.example.com
+    - host: dev.mycompany.com
       http:
         paths:
-          - path: /
-            pathType: Prefix
+          - path: /orders(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: myapp
                 port:
                   number: 80
-
